@@ -1,0 +1,3 @@
+C:\ESE3811A_Noe_Ortiz\Tarea4\x64\Debug\Tarea4.vcxproj.CopyComplete
+C:\ESE3811A_Noe_Ortiz\Tarea4\x64\Debug\Tarea4.exe
+C:\ESE3811A_Noe_Ortiz\Tarea4\x64\Debug\libsodium.dll
