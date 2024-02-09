@@ -1,7 +1,7 @@
 // Tarea 4 - Noe Ortiz """
 
 #include <stdio.h>
-#include "../libsodium/sodium.h"
+#include "sodium.h"
 
 int main(void) {
     uint32_t random = 0;
