@@ -1,0 +1,4 @@
+C:\Users\noe_9\Documents\MCUXpressoIDE_11.8.0_1165\workspace\frdmk64f_mbedtls_benchmark\drivers/fsl_clock.h:668:20:CLOCK_EnableClock	16	static
+C:\Users\noe_9\Documents\MCUXpressoIDE_11.8.0_1165\workspace\frdmk64f_mbedtls_benchmark\drivers/fsl_port.h:374:20:PORT_SetPinMux	16	static
+../board/pin_mux.c:37:6:BOARD_InitBootPins	8	static
+../board/pin_mux.c:60:6:BOARD_InitPins	8	static
