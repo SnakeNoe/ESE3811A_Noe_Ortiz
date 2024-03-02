@@ -1,6 +1,9 @@
 /*****************************************************************************/
 /* Includes:                                                                 */
 /*****************************************************************************/
+#include <stdint.h>
+#include <string.h>
+#include "aes.h"
 
 /*****************************************************************************/
 /* Defines:                                                                  */
@@ -13,3 +16,5 @@
 /*****************************************************************************/
 /* Private functions:                                                        */
 /*****************************************************************************/
+void AES_CBC_encrypt(uint8_t *plaintext, uint8_t *key, uint8_t *iv, uint8_t *encryptData, size_t *encryptedLen);
+void AES_CBC_decrypt(uint8_t *encryptData, size_t *encryptedLen, uint8_t *key, uint8_t *iv);
