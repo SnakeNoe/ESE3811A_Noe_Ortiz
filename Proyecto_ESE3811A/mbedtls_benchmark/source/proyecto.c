@@ -15,11 +15,14 @@
 #include <aes_encryption.h>
 #include <aes_encryption.h>
 #include "mbedtls/sha256.h"
+#include "mbedtls/rsa.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 #define HASH_LEN 32
+#define KEY_IN_BITS 1024
+#define KEY_LEN KEY_IN_BITS/8
 
 /*******************************************************************************
  * Prototypes
@@ -32,6 +35,29 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
+static int myrand( void *rng_state, unsigned char *output, size_t len )
+{
+    size_t use_len;
+    int rnd;
+
+    if( rng_state != NULL )
+        rng_state  = NULL;
+
+    while( len > 0 )
+    {
+        use_len = len;
+        if( use_len > sizeof(int) )
+            use_len = sizeof(int);
+
+        rnd = rand();
+        memcpy( output, &rnd, use_len );
+        output += use_len;
+        len -= use_len;
+    }
+
+    return( 0 );
+}
+
 /*!
  * @brief Main function
  */
@@ -43,6 +69,11 @@ int main(void)
 	uint8_t buff[512] = {0};
 	size_t encryptedLen;
 	uint8_t hash[32];
+	mbedtls_rsa_context rsa;
+	unsigned char publicKey[1024] = {0};
+	unsigned char privateKey[1024] = {0};
+	unsigned char mySign[2048] = {0};
+	int8_t ret = 1;
 
     /* Board pin, clock, debug console init */
     BOARD_InitBootPins();
@@ -69,6 +100,35 @@ int main(void)
 		PRINTF("0x%02x ", hash[i]);
 	}
 	PRINTF("\r\nLength: %d\r\n\n", HASH_LEN);
+	PRINTF("----------------------------------------------------------------------------------------\r\n");
+
+	mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V15, 0);
+    mbedtls_rsa_gen_key(&rsa, myrand, NULL, KEY_IN_BITS, 17);
+    mbedtls_rsa_public(&rsa, hash, publicKey);
+    mbedtls_rsa_private(&rsa, myrand, NULL, hash, privateKey);
+	mbedtls_rsa_pkcs1_sign(&rsa, myrand, NULL, MBEDTLS_RSA_PRIVATE, MBEDTLS_MD_SHA256, HASH_LEN, hash, mySign);
+	ret = mbedtls_rsa_pkcs1_verify(&rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, MBEDTLS_MD_SHA256, HASH_LEN, hash, mySign);
+	mbedtls_rsa_free(&rsa);
+	PRINTF("Digital signature\r\n");
+	PRINTF("Public key: ");
+	for(int i=0;i<KEY_LEN;i++){
+		PRINTF("0x%02x ", publicKey[i]);
+	}
+	PRINTF("\r\n\n");
+	PRINTF("Private key: ");
+	for(int i=0;i<KEY_LEN;i++){
+		PRINTF("0x%02x ", privateKey[i]);
+	}
+	PRINTF("\r\n\n");
+	PRINTF("Sign: ");
+	for(int i=0;i<128;i++){
+		PRINTF("0x%02x ", mySign[i]);
+	}
+	PRINTF("\r\n\n");
+	if(ret == 0){
+		PRINTF("Sign verification with public key successful!");
+	}
+	PRINTF("\r\n\n");
 	PRINTF("----------------------------------------------------------------------------------------\r\n");
 
 	AES_CBC_decrypt(buff, &encryptedLen, key, iv);
